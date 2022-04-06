@@ -1,0 +1,8 @@
+library(survival)
+setwd("C:\\Users\\13321\\OneDrive\\×ÀÃæ\\cox3\\score")
+rt<-read.table("input.txt",header=T,sep="\t",check.names=F,row.names=1)
+cox_m <- coxph(Surv(futime, fustat) ~age + stage + riskScore, data = rt)
+cox_m1<-step(cox_m,direction = "both")
+risk_score<-predict(cox_m1,type="risk",newdata=rt)
+risk_level<-as.vector(ifelse(risk_score>median(risk_score),"High","Low"))
+write.table(cbind(id=rownames(cbind(rt[,1:2],risk_score,risk_level)),cbind(rt[,1:2],risk_score,risk_level)),"risk_score.txt",sep="\t",quote=F,row.names=F)
